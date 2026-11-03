@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🌸 東京獨旅 · 可愛日系行程助手</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root{
+      --sakura-bg:#fff0f5;--sakura-light:#ffe4ec;--sakura-mid:#ffc2d4;
+      --sakura-main:#ff8fab;--sakura-deep:#e56b8a;--sakura-text:#5a3a47;
+    }
+    body{font-family:'Segoe UI','PingFang TC','Microsoft JhengHei','Hiragino Sans',sans-serif;
+      background:var(--sakura-bg);color:var(--sakura-text)}
+    .card{background:#fff;border-radius:26px;box-shadow:0 6px 18px rgba(255,183,197,.28),0 2px 6px rgba(255,143,171,.12);transition:all .2s}
+    .btn-pink{background:linear-gradient(135deg,#ffb7c5,#ff8fab);color:#fff;border-radius:40px;font-weight:600;padding:.5rem 1.25rem;transition:all .2s;box-shadow:0 4px 10px rgba(255,143,171,.3)}
+    .btn-pink:active{transform:scale(.96)}
+    .btn-pink:disabled{opacity:.45;box-shadow:none}
+    .btn-outline-pink{border:2px solid var(--sakura-mid);color:var(--sakura-deep);border-radius:40px;font-weight:600;padding:.4rem 1.2rem;background:#fff;transition:all .2s}
+    .btn-outline-pink:active{background:var(--sakura-light)}
+    .btn-outline-pink:disabled{opacity:.45}
+    .date-btn{border-radius:30px;padding:.6rem .2rem;font-size:.85rem;font-weight:600;transition:all .2s;background:#fff;color:var(--sakura-deep);border:1px solid var(--sakura-mid);box-shadow:0 2px 6px rgba(255,194,212,.25)}
+    .date-btn-active{background:linear-gradient(135deg,var(--sakura-mid),var(--sakura-main));color:#fff;box-shadow:0 6px 14px rgba(255,143,171,.4)}
+    .map-link{color:var(--sakura-deep);text-decoration:underline wavy var(--sakura-mid);font-weight:500}
+    ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--sakura-light)}::-webkit-scrollbar-thumb{background:var(--sakura-mid);border-radius:10px}
+    .section-title{font-weight:700;color:var(--sakura-deep);display:flex;align-items:center;gap:8px;font-size:1.1rem}
+    .app-container{max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:88px;background:linear-gradient(180deg,#fff5f8 0%,var(--sakura-bg) 100%)}
+    .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.7rem;padding:.45rem 0;border-radius:16px;transition:all .2s;color:#c98fa3}
+    .tab-btn.active{color:var(--sakura-deep);background:var(--sakura-light);font-weight:700}
+  </style>
+</head>
+<body>
+  <div id="app" class="app-container px-4 pt-4">
+    <div class="fixed top-2 right-2 z-50 text-xs px-3 py-1.5 rounded-full shadow-md transition-all duration-300"
+         :class="saveStatus === 'saved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'">
+      <i class="fas" :class="saveStatus === 'saved' ? 'fa-save' : 'fa-exclamation-triangle'"></i>
+      {{ saveStatus === 'saved' ? '已儲存' : '儲存失敗' }}
+    </div>
+
+    <header class="mb-5 text-center">
+      <h1 class="text-2xl font-bold tracking-wide flex items-center justify-center gap-2" style="color:var(--sakura-main)">
+        <i class="fas fa-sakura" style="color:var(--sakura-mid)"></i> 東京獨旅 4 天 <i class="fas fa-suitcase-rolling" style="color:var(--sakura-mid)"></i>
+      </h1>
+      <p class="text-xs mt-1" style="color:var(--sakura-deep)">2026.11.14 - 11.17 · 可愛日系行程助手</p>
+    </header>
+
+    <!-- ===== 行程分頁 ===== -->
+    <div v-show="activeTab === 'itinerary'">
+      <div class="grid grid-cols-4 gap-2 mb-5">
+        <button v-for="day in days" :key="day.date" @click="selectedDate = day.date"
+                class="date-btn py-3 flex flex-col items-center" :class="{ 'date-btn-active': selectedDate === day.date }">
+          <span class="text-lg">{{ day.emoji }}</span>
+          <span class="text-xs">{{ day.label }}</span>
+          <span class="text-[10px] opacity-80">{{ day.short }}</span>
+        </button>
+      </div>
+
+      <div class="card p-5 mb-5">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="section-title"><i class="fas fa-map-pin" style="color:var(--sakura-main)"></i> {{ currentDay.title }}</h2>
+          <span class="text-xs px-2 py-1 rounded-full" style="background:var(--sakura-light);color:var(--sakura-deep)">{{ currentDay.dateStr }}</span>
+        </div>
+
+        <div class="space-y-4">
+          <div v-for="(item, idx) in currentDay.itinerary" :key="idx" class="border-l-4 pl-3 py-1" style="border-color:var(--sakura-mid)">
+            <div class="flex items-start gap-2">
+              <span class="text-sm font-bold min-w-[80px]" style="color:var(--sakura-deep)">{{ item.time }}</span>
+              <div class="flex-1">
+                <p class="font-medium text-gray-800 text-sm">{{ item.activity }}</p>
+                <p class="text-xs text-gray-500 mt-0.5">{{ item.note }}</p>
+                
+                <div class="flex flex-wrap items-center gap-2 mt-1">
+                  <a v-if="item.place" :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.place)}`"
+                     target="_blank" class="map-link text-xs inline-flex items-center gap-1">
+                    <i class="fas fa-map-marker-alt"></i> 地圖
+                  </a>
+
+                  <!-- 單個行程專屬預約截圖按鈕 -->
+                  <label class="text-[11px] px-2 py-0.5 rounded-full border cursor-pointer inline-flex items-center gap-1 transition-all"
+                         :style="item.bookingImg ? 'background:var(--sakura-light); color:var(--sakura-deep); border-color:var(--sakura-main)' : 'background:#fff; color:gray; border-color:#e5e7eb'">
+                    <i class="fas fa-ticket-alt"></i> {{ item.bookingImg ? '已上載截圖' : '上載預約截圖' }}
+                    <input type="file" accept="image/*" class="hidden" @change="(e) => handleItemBookingUpload(e, item)">
+                  </label>
+                </div>
+
+                <!-- 截圖預覽小縮圖 -->
+                <div v-if="item.bookingImg" class="mt-2 flex items-center gap-2">
+                  <div class="relative group rounded-lg overflow-hidden border w-16 h-16 bg-white shadow-sm">
+                    <img :src="item.bookingImg" class="w-full h-full object-cover cursor-pointer" @click="previewImg(item.bookingImg)">
+                    <button @click="item.bookingImg = ''" class="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px]">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div v-if="item.transport" class="mt-1.5 text-[11px] p-1.5 rounded-lg flex items-start gap-1"
+                     style="background:var(--sakura-light);color:var(--sakura-deep)">
+                  <i class="fas fa-subway mt-0.5"></i><span>{{ item.transport }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 記帳分頁 ===== -->
+    <div v-show="activeTab === 'account'">
+      <div class="card p-5 mb-5">
+        <h2 class="section-title mb-3"><i class="fas fa-receipt" style="color:var(--sakura-main)"></i> 記帳本</h2>
+        <div class="flex gap-2 mb-3">
+          <label class="btn-pink text-sm flex items-center gap-2 cursor-pointer">
+            <i class="fas fa-camera"></i> 拍攝單據
+            <input type="file" accept="image/*" capture="environment" class="hidden" @change="handleReceiptUpload">
+          </label>
+          <button @click="simulateReceiptRecognition" class="btn-outline-pink text-sm flex items-center gap-2">
+            <i class="fas fa-magic"></i> 模擬識別
+          </button>
+        </div>
+        <div v-if="currentItems.length" class="mb-3 p-3 rounded-2xl" style="background:var(--sakura-light)">
+          <p class="text-xs font-semibold mb-2" style="color:var(--sakura-deep)">📝 識別結果 (可修改)</p>
+          <div v-for="(item, idx) in currentItems" :key="idx" class="flex items-center gap-2 mb-2 bg-white p-2 rounded-xl">
+            <input v-model="item.name" class="flex-1 border rounded-lg px-2 py-1 text-sm" style="border-color:var(--sakura-mid)" placeholder="品項">
+            <input v-model.number="item.price" type="number" class="w-20 border rounded-lg px-2 py-1 text-sm" style="border-color:var(--sakura-mid)" placeholder="金額">
+            <button @click="currentItems.splice(idx, 1)" style="color:var(--sakura-main)"><i class="fas fa-trash-alt"></i></button>
+          </div>
+          <div class="flex justify-between items-center mt-2">
+            <span class="text-sm font-bold" style="color:var(--sakura-deep)">總額：¥{{ currentTotal }}</span>
+            <button @click="addCurrentToBill" class="btn-pink text-xs px-4 py-1.5">加入帳單</button>
+          </div>
+        </div>
+        <div v-if="currentBillItems.length" class="mb-2">
+          <p class="text-xs font-semibold" style="color:var(--sakura-deep)">🧾 目前帳單明細</p>
+          <div v-for="(bill, idx) in currentBillItems" :key="idx" class="flex justify-between text-sm py-1 border-b" style="border-color:var(--sakura-light)">
+            <span>{{ bill.name }}</span><span style="color:var(--sakura-main)">¥{{ bill.price }}</span>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-3">
+          <button @click="settleBill" class="btn-pink text-sm flex-1" :disabled="!currentBillItems.length">
+            <i class="fas fa-check-circle mr-1"></i> 結清帳單
+          </button>
+          <button @click="exportBillText" class="btn-outline-pink text-sm flex-1" :disabled="!currentBillItems.length">
+            <i class="fas fa-file-export"></i> 匯出文字
+          </button>
+        </div>
+        <div v-if="settledBills.length" class="mt-4">
+          <p class="text-xs font-semibold mb-1" style="color:var(--sakura-deep)">📅 歷史結清</p>
+          <div v-for="(settle, idx) in settledBills" :key="idx" class="p-2 rounded-xl mb-2 text-xs" style="background:var(--sakura-light)">
+            <div class="flex justify-between font-medium" style="color:var(--sakura-deep)">
+              <span>{{ settle.time }}</span><span>總額 ¥{{ settle.total }}</span>
+            </div>
+            <div class="text-gray-500">{{ settle.items.map(i => i.name).join('、') }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 圖片預覽 Modal -->
+    <div v-if="previewImageUrl" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" @click="previewImageUrl = ''">
+      <div class="relative max-w-full max-h-full">
+        <img :src="previewImageUrl" class="max-h-[85vh] rounded-xl object-contain">
+        <button class="absolute top-2 right-2 bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-gray-800">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 底部分頁導航 -->
+    <div class="fixed bottom-0 left-0 right-0 max-w-[480px] mx-auto bg-white/95 backdrop-blur-md border-t flex justify-around px-2 py-1.5"
+         style="border-color:var(--sakura-light)">
+      <button v-for="tab in tabs" :key="tab.key" @click="activeTab = tab.key"
+              class="tab-btn" :class="{ active: activeTab === tab.key }">
+        <i class="fas text-lg" :class="tab.icon"></i>{{ tab.label }}
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, watch, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const STORAGE_KEY = 'tokyo_trip_app_v4';
+        const saveStatus = ref('saved');
+        const activeTab = ref('itinerary');
+        const selectedDate = ref('2026-11-14');
+        const previewImageUrl = ref('');
+
+        const tabs = [
+          { key: 'itinerary', label: '行程', icon: 'fa-calendar-alt' },
+          { key: 'account', label: '記帳', icon: 'fa-wallet' }
+        ];
+
+        const days = ref([
+          { date: '2026-11-14', label: 'Day1', short: '11/14', emoji: '🌸', title: '抵達日・池袋編髮+涉谷展覽+推活咖啡', dateStr: '11月14日 (六)', itinerary: [
+            { time: '06:30', activity: '抵達成田機場 (NRT)', note: '下機、入境、領取行李', place: '成田機場' },
+            { time: '07:15-07:50', activity: '搭乘Keisei Skyliner往京成上野', note: '約36分鐘，¥2,520。車程中分裝行李', place: '京成上野駅', transport: 'Skyliner 直達京成上野' },
+            { time: '07:50-08:10', activity: '京成上野駅 ➔ 上野駅「入谷口」寄存行李', note: '計程車直達JR上野站入谷口(¥600-800)，切忌走路', place: 'JR上野站入谷口', transport: '計程車3-5分鐘' },
+            { time: '08:10-08:20', activity: '只帶小袋步行到朋友家', note: 'プラチナコート上野（台東区下谷1-5-35），入谷口步行6分鐘，全程平路', place: 'プラチナコート上野', transport: '步行6分鐘' },
+            { time: '08:20-09:30', activity: '朋友家：換衣服 + 化妝', note: '輕鬆進行，不用理會大行李', place: 'プラチナコート上野' },
+            { time: '09:30-09:45', activity: '步行回入谷口取回行李', note: '6分鐘，Suica一刷即開', place: 'JR上野站入谷口', transport: '步行6分鐘' },
+            { time: '09:45-10:15', activity: 'ホテルマイステイズ東池袋・行李寄存', note: '入谷口 → 步行至入谷駅 → 日比谷線 → 上野 → 山手線 → 大塚，約30分鐘 ¥400', place: 'ホテルマイステイズ東池袋', transport: '日比谷線+山手線 約30分鐘 ¥400' },
+            { time: '10:15-12:30', activity: '池袋西口周邊逛街/休息', note: '編髮前緩衝時間，可先吃點東西', place: '池袋西口' },
+            { time: '13:00-13:30', activity: 'ヘアセットAries 池袋駅西口店 編髮(已預約)', note: '13:00開始，約30分鐘完成', place: 'ヘアセットAries 池袋駅西口店', transport: '酒店步行至池袋西口約10分鐘', bookingImg: '' },
+            { time: '13:30-14:05', activity: '池袋 ➔ 涉谷 (直奔會場)', note: 'JR山手線直達約15-20分鐘，下車後步行至會場', place: '涉谷會場', transport: 'JR山手線 池袋→涉谷' },
+            { time: '14:10', activity: '🔥 Paradox Live 7周年快閃展覽(第1場) — 絕對不可遲到', note: '14:10準時開始，絕不推遲。偵察場地出口、周邊販售動線', place: '涉谷會場', bookingImg: '' },
+            { time: '15:30-17:00', activity: 'me me coffee 推活咖啡時光(已預約17:00)', note: '已預約17:00時段進場，展覽後先緩衝再前往', place: 'me me coffee', bookingImg: '' },
+            { time: '18:00-20:00', activity: '晚餐：涉谷/新宿吃naan', note: '印度烤餅/芝士Naan', place: '涉谷' },
+            { time: '20:30', activity: '返回東池袋酒店休息', note: '紅眼航班後早點休息', place: 'ホテルマイステイズ東池袋', transport: 'JR山手線 涉谷→池袋' }
+          ]},
+          { date: '2026-11-15', label: 'Day2', short: '11/15', emoji: '🌊', title: '橫濱海風+紅磚倉庫+星穹鐵道KTV', dateStr: '11月15日 (日)', itinerary: [
+            { time: '10:00-10:40', activity: '池袋出發前往橫濱', note: 'JR湘南新宿ライン直達約35-40分鐘', place: '橫濱', transport: 'JR湘南新宿ライン 池袋→橫濱' },
+            { time: '11:00-11:40', activity: '橫濱摩天輪「Cosmo Clock 21」', note: '¥1,000，欣賞偶像大師聯動景觀', place: 'Cosmo Clock 21' },
+            { time: '11:45-13:15', activity: '散步經汽車道 ➔ 紅磚倉庫午餐', note: '推薦bills鬆餅或HAMMERHEAD', place: '紅磚倉庫', transport: '步行經汽車道' },
+            { time: '13:15-14:15', activity: '紅磚倉庫挑選手信', note: 'ありあけハーバー船型蛋糕等', place: '紅磚倉庫' },
+            { time: '14:20-14:55', activity: '搭乘みなとみらい線直通東急東横線前往涉谷', note: '約30分鐘，免轉車', place: '涉谷', transport: 'みなとみらい線直通東急東横線' },
+            { time: '15:30-18:30', activity: 'カラオケまねきねこ(涉谷店) — 崩壞星穹鐵道聯動', note: '入座時必須第一時間告知要購買聯動商品', place: 'カラオケまねきねこ 涉谷店', bookingImg: '' },
+            { time: '19:00', activity: '涉谷晚餐 ➔ 返回池袋酒店', note: '', place: '池袋', transport: 'JR山手線 涉谷→池袋' }
+          ]},
+          { date: '2026-11-16', label: 'Day3', short: '11/16', emoji: '🎄', title: '東京站Sanrio+涉谷展覽+晴空塔聖誕市集', dateStr: '11月16日 (一)', itinerary: [
+            { time: '10:00-10:25', activity: '池袋搭乘丸之內線直達東京站', note: '約20分鐘，丸之內線有電梯', place: '東京站', transport: '丸之內線 池袋→東京' },
+            { time: '10:30-12:00', activity: '東京站Character Street (Sanrio專門店)', note: '', place: '東京站一番街' },
+            { time: '12:00-13:30', activity: '東京站內午餐', note: '拉麵街或地下美食街，免走樓梯', place: '東京站' },
+            { time: '13:40-14:20', activity: '前往涉谷', note: '東京站步行至大手町 ➔ 半藏門線直達涉谷約25分鐘', place: '涉谷', transport: '半藏門線 大手町→涉谷' },
+            { time: '14:20-15:00', activity: '涉谷站周邊緩衝', note: '喝咖啡、上洗手間、整理裝備', place: '涉谷站' },
+            { time: '15:10-15:40', activity: '🔥 Paradox Live 7周年快閃展覽', note: '建議今天把周邊買齊', place: '涉谷會場', bookingImg: '' },
+            { time: '15:50-16:25', activity: '涉谷搭乘半藏門線直達「押上」站', note: '約35分鐘，免換線', place: '押上站', transport: '半藏門線 涉谷→押上' },
+            { time: '16:30-19:30', activity: '晴空塔Solamachi商場 + 聖誕市集', note: '押上站直連商場，傍晚點燈氣氛佳', place: '晴空塔' },
+            { time: '20:10', activity: '返回池袋酒店', note: '半藏門線 ➔ 大手町 ➔ 丸之內線直達', place: '池袋', transport: '半藏門線+丸之內線' }
+          ]},
+          { date: '2026-11-17', label: 'Day4', short: '11/17', emoji: '✈️', title: '三場連續展覽+輕鬆返港', dateStr: '11月17日 (二)', itinerary: [
+            { time: '前一晚', activity: '請酒店前台填寫Yamato宅急便，大行李箱直送成田機場', note: '約¥1,500-2,000，千萬不要讓行李成為負擔', place: '酒店前台' },
+            { time: '08:30-09:00', activity: '輕鬆退房(輕裝上陣)', note: '只背隨身小包', place: 'ホテルマイステイズ東池袋' },
+            { time: '09:00-09:15', activity: 'JR山手線：池袋 ➔ 涉谷', note: '約10分鐘', place: '涉谷', transport: 'JR山手線 池袋→涉谷' },
+            { time: '09:15-11:40', activity: '涉谷早午餐與輕鬆漫步', note: '逛Scramble Square、PARCO，11:15前食完正餐', place: '涉谷' },
+            { time: '11:50', activity: '到達涉谷會場外排隊準備', note: '', place: '涉谷會場' },
+            { time: '12:10-12:40', activity: '🔥 Paradox Live 快閃展覽(第1場)', note: '', place: '涉谷會場', bookingImg: '' },
+            { time: '12:40-13:10', activity: '🔥 Paradox Live 快閃展覽(第2場)', note: '', place: '涉谷會場', bookingImg: '' },
+            { time: '13:10-13:40', activity: '🔥 Paradox Live 快閃展覽(第3場)', note: '', place: '涉谷會場', bookingImg: '' },
+            { time: '13:40-14:05', activity: '展覽結束，立刻離開會場', note: '嚴格時間紅線：14:05前抵達涉谷站', place: '涉谷站' },
+            { time: '14:05-15:25', activity: '涉谷 ➔ 成田機場', note: '方案A：N\'EX直達約75-80分鐘¥3,070。方案B：山手線至日暮里轉Skyliner', place: '成田機場', transport: 'N\'EX 或 山手線+Skyliner' },
+            { time: '15:30-16:00', activity: '到達成田機場：領取宅配行李+辦理Check-in', note: '先到機場宅配櫃檯領回行李箱', place: '成田機場' },
+            { time: '18:00', activity: 'CX505航班起飛，愉快返回香港', note: '預計22:20抵達', place: '成田機場' }
+          ]}
+        ]);
+
+        const currentItems = ref([]);
+        const currentBillItems = ref([]);
+        const settledBills = ref([]);
+
+        const currentDay = computed(() => days.value.find(d => d.date === selectedDate.value) || days.value[0]);
+        const currentTotal = computed(() => currentItems.value.reduce((s, i) => s + (i.price || 0), 0));
+
+        // 儲存 / 還原
+        const save = () => {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+              selectedDate: selectedDate.value, days: days.value,
+              settledBills: settledBills.value, currentBillItems: currentBillItems.value
+            }));
+            saveStatus.value = 'saved';
+          } catch { saveStatus.value = 'error'; }
+        };
+
+        const load = () => {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const d = JSON.parse(raw);
+            if (d.selectedDate) selectedDate.value = d.selectedDate;
+            if (d.days) days.value = d.days;
+            if (d.settledBills) settledBills.value = d.settledBills;
+            if (d.currentBillItems) currentBillItems.value = d.currentBillItems;
+          } catch (e) { console.error(e); }
+        };
+
+        let saveTimer = null;
+        watch([selectedDate, days, settledBills, currentBillItems], () => {
+          clearTimeout(saveTimer);
+          saveTimer = setTimeout(save, 300);
+        }, { deep: true });
+
+        onMounted(load);
+
+        // 單一行程預約截圖上載
+        const handleItemBookingUpload = (e, item) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            item.bookingImg = event.target.result;
+          };
+          reader.readAsDataURL(file);
+          e.target.value = '';
+        };
+
+        const previewImg = (img) => {
+          previewImageUrl.value = img;
+        };
+
+        // 記帳
+        const handleReceiptUpload = (e) => { simulateReceiptRecognition(); e.target.value = ''; };
+        const simulateReceiptRecognition = () => {
+          currentItems.value = [{ name: '芝士Naan', price: 1200 }, { name: '拉麵', price: 980 }];
+        };
+        const addCurrentToBill = () => {
+          currentItems.value.forEach(i => { if (i.name && i.price) currentBillItems.value.push({ ...i }); });
+          currentItems.value = [];
+        };
+        const settleBill = () => {
+          if (!currentBillItems.value.length) return;
+          const n = new Date(), p = (x) => String(x).padStart(2, '0');
+          settledBills.value.push({
+            time: `${n.getFullYear()}-${p(n.getMonth()+1)}-${p(n.getDate())} ${p(n.getHours())}:${p(n.getMinutes())}`,
+            total: currentBillItems.value.reduce((s, i) => s + i.price, 0),
+            items: [...currentBillItems.value]
+          });
+          currentBillItems.value = [];
+        };
+        const exportBillText = () => {
+          if (!currentBillItems.value.length) return;
+          const total = currentBillItems.value.reduce((s, i) => s + i.price, 0);
+          let text = `🌸 東京獨旅帳單明細 🌸\n日期：${new Date().toLocaleString()}\n------------------------\n`;
+          currentBillItems.value.forEach(i => { text += `${i.name}: ¥${i.price}\n`; });
+          text += `------------------------\n總額：¥${total}\n`;
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+          a.download = `東京帳單_${new Date().toISOString().slice(0,10)}.txt`;
+          a.click();
+        };
+
+        return {
+          saveStatus, activeTab, selectedDate, days, tabs,
+          currentItems, currentBillItems, settledBills,
+          currentDay, currentTotal, previewImageUrl,
+          handleItemBookingUpload, previewImg,
+          handleReceiptUpload, simulateReceiptRecognition, addCurrentToBill, settleBill,
+          exportBillText
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
