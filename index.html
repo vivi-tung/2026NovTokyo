@@ -133,11 +133,40 @@
         </button>
       </div>
 
+      <!-- 航班資訊卡 (只在 Day 4 顯示) -->
+      <div v-if="selectedDate === '2026-11-17'" class="card p-4 mb-4 relative z-10 border-t-4 border-pink-400">
+        <h2 class="section-title mb-2"><i class="fas fa-plane" style="color:var(--theme-pink)"></i> 回程航班詳情</h2>
+        <div class="text-sm text-gray-700 space-y-1">
+          <p><strong>航班：</strong>CX505 (國泰航空)</p>
+          <p><strong>起飛：</strong>18:00 成田機場 (NRT)</p>
+          <p><strong>抵達：</strong>22:20 香港國際機場 (HKG)</p>
+          <p class="text-xs text-gray-500 pt-1">請確保 16:00 前抵達機場辦理 Check-in。</p>
+        </div>
+      </div>
+
       <div class="card p-4 mb-5 relative z-10">
+        <!-- 天氣預報區塊 -->
+        <div class="mb-4 p-3 rounded-xl border border-pink-100 bg-pink-50/60 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fas text-xl" :class="currentDay.weather.icon" :style="{ color: currentDay.weather.color }"></i>
+            <div>
+              <p class="text-xs font-bold" style="color:var(--theme-pink-deep)">當日天氣預測</p>
+              <p class="text-[11px] text-gray-600">{{ currentDay.weather.desc }}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-[11px] font-bold px-2 py-1 rounded-full" 
+                  :style="{ background: currentDay.weather.umbrella ? '#fef2f2' : '#f0fdf4', color: currentDay.weather.umbrella ? '#b91c1c' : '#166534' }">
+              <i class="fas" :class="currentDay.weather.umbrella ? 'fa-umbrella' : 'fa-check-circle'"></i>
+              {{ currentDay.weather.umbrella ? '建議帶傘' : '無需帶傘' }}
+            </span>
+          </div>
+        </div>
+
         <div class="flex justify-between items-center mb-4 gap-2 border-b border-pink-100 pb-3">
           <h2 class="section-title min-w-0">
             <i class="fas fa-map-pin flex-shrink-0" style="color:var(--theme-pink)"></i> 
-            <span class="truncate">{{ currentDay.title }}</span>
+            <span class="truncate">{{ currentDay.label }}</span>
           </h2>
           <span class="text-[10px] px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0 font-bold" 
                 style="background:var(--theme-blue-light); color:#0369a1">
@@ -325,7 +354,7 @@
 
     createApp({
       setup() {
-        const STORAGE_KEY = 'tokyo_trip_app_v14';
+        const STORAGE_KEY = 'tokyo_trip_app_v16';
         const saveStatus = ref('saved');
         const activeTab = ref('itinerary');
         const selectedDate = ref('2026-11-14');
@@ -340,7 +369,9 @@
         ];
 
         const days = ref([
-          { date: '2026-11-14', label: 'Day1', short: '11/14', emoji: '🌸', title: '抵達日・池袋編髮+涉谷展覽+推活咖啡', dateStr: '11月14日 (六)', itinerary: [
+          { date: '2026-11-14', label: 'Day 1', short: '11/14', emoji: '🌸', title: 'Day 1', dateStr: '11月14日 (六)', 
+            weather: { desc: '晴時多雲，氣溫約 15-20°C', icon: 'fa-cloud-sun', color: '#f59e0b', umbrella: false },
+            itinerary: [
             { time: '06:30', activity: '抵達成田機場 (NRT)', note: '下機、入境、領取行李', place: '成田機場' },
             { time: '07:15-07:50', activity: '搭乘Keisei Skyliner往京成上野', note: '約36分鐘，¥2,520。車程中分裝行李', place: '京成上野駅', transport: 'Skyliner 直達京成上野' },
             { time: '07:50-08:20', activity: '前往朋友家', note: '從京成上野駅步行至朋友家（約6分鐘，全程平路），不需拖著大行李。', place: 'プラチナコート上野', transport: '步行6分鐘' },
@@ -370,7 +401,9 @@
             { time: '18:00-20:00', activity: '晚餐：涉谷/新宿吃naan', note: '印度烤餅/芝士Naan', place: '涉谷' },
             { time: '20:30', activity: '返回東池袋酒店休息', note: '紅眼航班後早點休息', place: 'ホテルマイステイズ東池袋', transport: 'JR山手線 涉谷→池袋' }
           ]},
-          { date: '2026-11-15', label: 'Day2', short: '11/15', emoji: '🌊', title: '橫濱海風+紅磚倉庫+星穹鐵道KTV', dateStr: '11月15日 (日)', itinerary: [
+          { date: '2026-11-15', label: 'Day 2', short: '11/15', emoji: '🌊', title: 'Day 2', dateStr: '11月15日 (日)', 
+            weather: { desc: '陰天，可能有短暫陣雨', icon: 'fa-cloud-rain', color: '#3b82f6', umbrella: true },
+            itinerary: [
             { time: '10:00-10:40', activity: '池袋出發前往橫濱', note: 'JR湘南新宿ライン直達約35-40分鐘', place: '橫濱', transport: 'JR湘南新宿ライン 池袋→橫濱' },
             { time: '11:00-11:40', activity: '橫濱摩天輪「Cosmo Clock 21」', note: '¥1,000，欣賞偶像大師聯動景觀', place: 'Cosmo Clock 21' },
             { time: '11:45-13:15', activity: '散步經汽車道 ➔ 紅磚倉庫午餐', note: '推薦bills鬆餅或HAMMERHEAD', place: '紅磚倉庫', transport: '步行經汽車道' },
@@ -379,7 +412,9 @@
             { time: '15:30-18:30', activity: 'カラオケまねきねこ(涉谷店) — 崩壞星穹鐵道聯動', note: '入座時必須第一時間告知要購買聯動商品', place: 'カラオケまねきねこ 涉谷店' },
             { time: '19:00', activity: '涉谷晚餐 ➔ 返回池袋酒店', note: '', place: '池袋', transport: 'JR山手線 涉谷→池袋' }
           ]},
-          { date: '2026-11-16', label: 'Day3', short: '11/16', emoji: '🎄', title: '東京站Sanrio+涉谷展覽+晴空塔聖誕市集', dateStr: '11月16日 (一)', itinerary: [
+          { date: '2026-11-16', label: 'Day 3', short: '11/16', emoji: '🎄', title: 'Day 3', dateStr: '11月16日 (一)', 
+            weather: { desc: '晴朗，早晚溫差大', icon: 'fa-sun', color: '#f59e0b', umbrella: false },
+            itinerary: [
             { time: '10:00-10:25', activity: '池袋搭乘丸之內線直達東京站', note: '約20分鐘，丸之內線有電梯', place: '東京站', transport: '丸之內線 池袋→東京' },
             { time: '10:30-12:00', activity: '東京站Character Street (Sanrio專門店)', note: '', place: '東京站一番街' },
             { time: '12:00-13:30', activity: '東京站內午餐', note: '拉麵街或地下美食街，免走樓梯', place: '東京站' },
@@ -390,7 +425,9 @@
             { time: '16:30-19:30', activity: '晴空塔Solamachi商場 + 聖誕市集', note: '押上站直連商場，傍晚點燈氣氛佳', place: '晴空塔' },
             { time: '20:10', activity: '返回池袋酒店', note: '半藏門線 ➔ 大手町 ➔ 丸之內線直達', place: '池袋', transport: '半藏門線+丸之內線' }
           ]},
-          { date: '2026-11-17', label: 'Day4', short: '11/17', emoji: '✈️', title: '三場展覽+日暮里行李+輕鬆返港', dateStr: '11月17日 (二)', itinerary: [
+          { date: '2026-11-17', label: 'Day 4', short: '11/17', emoji: '✈️', title: 'Day 4', dateStr: '11月17日 (二)', 
+            weather: { desc: '多雲時晴，適合出行', icon: 'fa-cloud-sun', color: '#f59e0b', umbrella: false },
+            itinerary: [
             { time: '09:50-10:00', activity: '輕鬆退房(輕裝上陣)', note: '不化妝，最晚 10:00 退房。只背隨身小包，拖著大行李移動。', place: 'ホテルマイステイズ東池袋' },
             { time: '10:00-10:20', activity: 'JR山手線：池袋 ➔ 日暮里', note: '約11分鐘', place: '日暮里站', transport: 'JR山手線 池袋→日暮里' },
             { time: '11:00-11:30', activity: 'APA HOTEL TKP NIPPORI-EKIMAE 寄存行李', note: '提早抵達飯店，確保 11:30 前完成寄存手續。', place: 'APA HOTEL TKP NIPPORI-EKIMAE', bookingImg: '', locked: true },
