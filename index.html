@@ -2,157 +2,288 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🌸 東京獨旅 · 可愛日系行程助手</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>My Solo Trip</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     :root{
-      --sakura-bg:#fff0f5;--sakura-light:#ffe4ec;--sakura-mid:#ffc2d4;
-      --sakura-main:#ff8fab;--sakura-deep:#e56b8a;--sakura-text:#5a3a47;
+      --bg-color: #fff8fa;
+      --theme-pink: #f472b6;
+      --theme-pink-light: #fce7f3;
+      --theme-pink-deep: #db2777;
+      --theme-blue: #7dd3fc;
+      --theme-blue-light: #e0f2fe;
+      --theme-yellow: #fcd34d;
+      --text-main: #831843;
     }
-    body{font-family:'Segoe UI','PingFang TC','Microsoft JhengHei','Hiragino Sans',sans-serif;
-      background:var(--sakura-bg);color:var(--sakura-text)}
-    .card{background:#fff;border-radius:26px;box-shadow:0 6px 18px rgba(255,183,197,.28),0 2px 6px rgba(255,143,171,.12);transition:all .2s}
-    .btn-pink{background:linear-gradient(135deg,#ffb7c5,#ff8fab);color:#fff;border-radius:40px;font-weight:600;padding:.5rem 1.25rem;transition:all .2s;box-shadow:0 4px 10px rgba(255,143,171,.3)}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html,body{overflow-x:hidden;-webkit-text-size-adjust:100%}
+    body{
+      font-family:'Segoe UI','PingFang TC','Microsoft JhengHei','Hiragino Sans',sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      margin:0;
+      background-image: radial-gradient(var(--theme-pink-light) 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+    }
+    
+    .card{
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-radius: 24px;
+      border: 2px solid var(--theme-pink-light);
+      box-shadow: 0 6px 20px rgba(244,114,182,.12), 0 2px 8px rgba(125,211,252,.08);
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-pink{
+      background: linear-gradient(135deg, var(--theme-pink), #fb7185);
+      color:#fff; border-radius:40px; font-weight:600; padding:.5rem 1.1rem;
+      transition:all .2s; box-shadow:0 4px 12px rgba(244,114,182,.3); border:none;
+    }
     .btn-pink:active{transform:scale(.96)}
-    .btn-pink:disabled{opacity:.45;box-shadow:none}
-    .btn-outline-pink{border:2px solid var(--sakura-mid);color:var(--sakura-deep);border-radius:40px;font-weight:600;padding:.4rem 1.2rem;background:#fff;transition:all .2s}
-    .btn-outline-pink:active{background:var(--sakura-light)}
+    .btn-pink:disabled{opacity:.45; box-shadow:none}
+    
+    .btn-outline-pink{
+      border:2px solid var(--theme-pink); color:var(--theme-pink-deep); background: #fff;
+      border-radius:40px; font-weight:600; padding:.4rem 1rem; transition:all .2s;
+    }
+    .btn-outline-pink:active{background:var(--theme-pink-light)}
     .btn-outline-pink:disabled{opacity:.45}
-    .date-btn{border-radius:30px;padding:.6rem .2rem;font-size:.85rem;font-weight:600;transition:all .2s;background:#fff;color:var(--sakura-deep);border:1px solid var(--sakura-mid);box-shadow:0 2px 6px rgba(255,194,212,.25)}
-    .date-btn-active{background:linear-gradient(135deg,var(--sakura-mid),var(--sakura-main));color:#fff;box-shadow:0 6px 14px rgba(255,143,171,.4)}
-    .map-link{color:var(--sakura-deep);text-decoration:underline wavy var(--sakura-mid);font-weight:500}
-    ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:var(--sakura-light)}::-webkit-scrollbar-thumb{background:var(--sakura-mid);border-radius:10px}
-    .section-title{font-weight:700;color:var(--sakura-deep);display:flex;align-items:center;gap:8px;font-size:1.1rem}
-    .app-container{max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:88px;background:linear-gradient(180deg,#fff5f8 0%,var(--sakura-bg) 100%)}
-    .tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.7rem;padding:.45rem 0;border-radius:16px;transition:all .2s;color:#c98fa3}
-    .tab-btn.active{color:var(--sakura-deep);background:var(--sakura-light);font-weight:700}
+
+    .date-btn{
+      border-radius:20px; padding:.5rem .1rem; font-size:.8rem; font-weight:600;
+      transition:all .2s; background:#fff; color:var(--theme-pink-deep);
+      border:2px solid var(--theme-pink-light); box-shadow:0 2px 6px rgba(244,114,182,.05); min-width:0;
+    }
+    .date-btn-active{
+      background: linear-gradient(135deg, var(--theme-pink), #fb7185);
+      color:#fff; border-color:transparent;
+      box-shadow:0 4px 12px rgba(244,114,182,.4);
+    }
+
+    .map-link{color:#0284c7; text-decoration:underline wavy var(--theme-blue); font-weight:600}
+    
+    .section-title{font-weight:800; color:var(--theme-pink-deep); display:flex; align-items:center; gap:8px; font-size:1.05rem}
+    
+    .app-container{
+      max-width:480px; margin:0 auto; min-height:100vh; padding-bottom:88px;
+      padding-left:14px; padding-right:14px; position: relative; z-index: 1;
+    }
+    
+    .tab-btn{
+      flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+      font-size:.7rem; padding:.45rem 0; border-radius:16px; transition:all .2s;
+      color:#f9a8d4; border:none; background:transparent;
+    }
+    .tab-btn.active{color:var(--theme-pink-deep); background:var(--theme-pink-light); font-weight:700}
+    
+    .time-col{flex:0 0 auto; width:78px; font-size:.8rem; font-weight:800; color:var(--theme-pink); word-break:keep-all}
+    .item-body{flex:1; min-width:0}
+    
+    .input-pink{
+      width:100%; border:2px solid var(--theme-pink-light); border-radius:12px;
+      padding:.45rem .6rem; font-size:.85rem; background:#fff; color:var(--text-main); outline:none;
+    }
+    .input-pink:focus{border-color:var(--theme-pink)}
+    
+    .lock-badge{
+      font-size:10px; padding:2px 8px; border-radius:20px;
+      background: linear-gradient(135deg, var(--theme-pink), #fb7185); color:#fff; white-space:nowrap;
+      box-shadow: 0 2px 4px rgba(244,114,182,.3); font-weight:bold;
+    }
   </style>
 </head>
 <body>
-  <div id="app" class="app-container px-4 pt-4">
-    <div class="fixed top-2 right-2 z-50 text-xs px-3 py-1.5 rounded-full shadow-md transition-all duration-300"
-         :class="saveStatus === 'saved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'">
-      <i class="fas" :class="saveStatus === 'saved' ? 'fa-save' : 'fa-exclamation-triangle'"></i>
+  <div id="app" class="app-container pt-4">
+    <div class="fixed top-3 right-3 z-50 text-[11px] px-3 py-1.5 rounded-full shadow-md transition-all duration-300 font-bold"
+         :class="saveStatus === 'saved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+      <i class="fas" :class="saveStatus === 'saved' ? 'fa-check-circle' : 'fa-exclamation-triangle'"></i>
       {{ saveStatus === 'saved' ? '已儲存' : '儲存失敗' }}
     </div>
 
-    <header class="mb-5 text-center">
-      <h1 class="text-2xl font-bold tracking-wide flex items-center justify-center gap-2" style="color:var(--sakura-main)">
-        <i class="fas fa-sakura" style="color:var(--sakura-mid)"></i> 東京獨旅 4 天 <i class="fas fa-suitcase-rolling" style="color:var(--sakura-mid)"></i>
-      </h1>
-      <p class="text-xs mt-1" style="color:var(--sakura-deep)">2026.11.14 - 11.17 · 可愛日系行程助手</p>
+    <header class="mb-6 text-center mt-2">
+      <div class="flex items-center justify-center gap-2 mb-1">
+        <i class="fas fa-star text-2xl" style="color:var(--theme-yellow)"></i>
+        <h1 class="text-3xl font-black tracking-widest" style="color:var(--theme-pink); text-shadow: 2px 2px 0px #fff, 4px 4px 0px var(--theme-pink-light)">
+          My Solo Trip
+        </h1>
+        <i class="fas fa-heart text-2xl" style="color:var(--theme-pink)"></i>
+      </div>
+      <div class="mt-1">
+        <p class="text-xs font-bold tracking-widest" style="color:var(--theme-pink-deep)">2026.11.14 - 11.17</p>
+        <p class="text-[11px] mt-2 font-medium bg-white/80 inline-block px-3 py-1 rounded-full border border-pink-200 shadow-sm" style="color:var(--text-main)">
+          買了可以慢慢反省，不買卻只能後悔
+        </p>
+      </div>
     </header>
 
     <!-- ===== 行程分頁 ===== -->
     <div v-show="activeTab === 'itinerary'">
-      <div class="grid grid-cols-4 gap-2 mb-5">
+      <div class="grid grid-cols-4 gap-1.5 mb-5 relative z-10">
         <button v-for="day in days" :key="day.date" @click="selectedDate = day.date"
-                class="date-btn py-3 flex flex-col items-center" :class="{ 'date-btn-active': selectedDate === day.date }">
-          <span class="text-lg">{{ day.emoji }}</span>
-          <span class="text-xs">{{ day.label }}</span>
-          <span class="text-[10px] opacity-80">{{ day.short }}</span>
+                class="date-btn flex flex-col items-center" :class="{ 'date-btn-active': selectedDate === day.date }">
+          <span class="text-base">{{ day.emoji }}</span>
+          <span class="text-[11px]">{{ day.label }}</span>
+          <span class="text-[9px] opacity-80">{{ day.short }}</span>
         </button>
       </div>
 
-      <div class="card p-5 mb-5">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="section-title"><i class="fas fa-map-pin" style="color:var(--sakura-main)"></i> {{ currentDay.title }}</h2>
-          <span class="text-xs px-2 py-1 rounded-full" style="background:var(--sakura-light);color:var(--sakura-deep)">{{ currentDay.dateStr }}</span>
+      <div class="card p-4 mb-5 relative z-10">
+        <div class="flex justify-between items-center mb-4 gap-2 border-b border-pink-100 pb-3">
+          <h2 class="section-title min-w-0">
+            <i class="fas fa-map-pin flex-shrink-0" style="color:var(--theme-pink)"></i> 
+            <span class="truncate">{{ currentDay.title }}</span>
+          </h2>
+          <span class="text-[10px] px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0 font-bold" 
+                style="background:var(--theme-blue-light); color:#0369a1">
+            {{ currentDay.dateStr }}
+          </span>
         </div>
 
         <div class="space-y-4">
-          <div v-for="(item, idx) in currentDay.itinerary" :key="idx" class="border-l-4 pl-3 py-1" style="border-color:var(--sakura-mid)">
+          <div v-for="(item, idx) in currentDay.itinerary" :key="idx" class="border-l-4 pl-3 py-1 relative" 
+               :style="{ borderColor: item.locked ? 'var(--theme-pink)' : 'var(--theme-pink-light)' }">
+            
             <div class="flex items-start gap-2">
-              <span class="text-sm font-bold min-w-[80px]" style="color:var(--sakura-deep)">{{ item.time }}</span>
-              <div class="flex-1">
-                <p class="font-medium text-gray-800 text-sm">{{ item.activity }}</p>
-                <p class="text-xs text-gray-500 mt-0.5">{{ item.note }}</p>
-                
-                <div class="flex flex-wrap items-center gap-2 mt-1">
+              <span class="time-col">{{ item.time }}</span>
+              <div class="item-body">
+                <div class="flex items-start justify-between gap-1">
+                  <p class="font-bold text-gray-800 text-sm break-words flex-1 leading-tight">{{ item.activity }}</p>
+                  <span v-if="item.locked" class="lock-badge flex-shrink-0">已預約</span>
+                  <button v-if="!item.locked" @click="removeItem(currentDay, idx)" class="text-gray-300 hover:text-red-400 flex-shrink-0 text-xs px-1 transition-colors" title="刪除">
+                    <i class="fas fa-times-circle"></i>
+                  </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-1 break-words">{{ item.note }}</p>
+
+                <!-- 宅配資訊展開按鈕 -->
+                <div v-if="item.deliveryInfo" class="mt-2">
+                  <button @click="item.showDelivery = !item.showDelivery" class="text-[11px] font-bold flex items-center gap-1 transition-colors" style="color:var(--theme-pink)">
+                    <i class="fas" :class="item.showDelivery ? 'fa-chevron-up' : 'fa-box'"></i> 
+                    {{ item.showDelivery ? '收起宅配資訊' : '展開查看宅配資訊 (填單用)' }}
+                  </button>
+                  
+                  <div v-if="item.showDelivery" class="mt-2 p-3 rounded-xl border border-pink-200 bg-pink-50/80 text-xs space-y-1.5 shadow-inner">
+                    <p><strong>飯店名稱：</strong>{{ item.deliveryInfo.hotel }}</p>
+                    <p><strong>郵遞區號：</strong>{{ item.deliveryInfo.zip }}</p>
+                    <p><strong>地址：</strong>{{ item.deliveryInfo.address }}</p>
+                    <p><strong>電話：</strong>{{ item.deliveryInfo.phone }}</p>
+                    <p class="pt-1.5 border-t border-pink-200 mt-1.5 text-red-500 font-bold">
+                      <i class="fas fa-exclamation-circle"></i> {{ item.deliveryInfo.note }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 mt-2">
                   <a v-if="item.place" :href="`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.place)}`"
-                     target="_blank" class="map-link text-xs inline-flex items-center gap-1">
+                     target="_blank" class="map-link text-[11px] inline-flex items-center gap-1 bg-sky-50 px-2 py-0.5 rounded-full">
                     <i class="fas fa-map-marker-alt"></i> 地圖
                   </a>
-
-                  <!-- 單個行程專屬預約截圖按鈕 -->
                   <label class="text-[11px] px-2 py-0.5 rounded-full border cursor-pointer inline-flex items-center gap-1 transition-all"
-                         :style="item.bookingImg ? 'background:var(--sakura-light); color:var(--sakura-deep); border-color:var(--sakura-main)' : 'background:#fff; color:gray; border-color:#e5e7eb'">
-                    <i class="fas fa-ticket-alt"></i> {{ item.bookingImg ? '已上載截圖' : '上載預約截圖' }}
+                         :style="item.bookingImg ? 'background:var(--theme-pink); color:#fff; border-color:var(--theme-pink)' : 'background:#fff; color:var(--theme-pink); border-color:var(--theme-pink-light)'">
+                    <i class="fas fa-ticket-alt"></i> {{ item.bookingImg ? '已上載' : '預約截圖' }}
                     <input type="file" accept="image/*" class="hidden" @change="(e) => handleItemBookingUpload(e, item)">
                   </label>
                 </div>
 
-                <!-- 截圖預覽小縮圖 -->
                 <div v-if="item.bookingImg" class="mt-2 flex items-center gap-2">
-                  <div class="relative group rounded-lg overflow-hidden border w-16 h-16 bg-white shadow-sm">
+                  <div class="relative group rounded-lg overflow-hidden border-2 border-pink-200 w-16 h-16 bg-white shadow-sm">
                     <img :src="item.bookingImg" class="w-full h-full object-cover cursor-pointer" @click="previewImg(item.bookingImg)">
-                    <button @click="item.bookingImg = ''" class="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px]">
+                    <button @click="item.bookingImg = ''" class="absolute top-0.5 right-0.5 bg-black/50 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px]">
                       <i class="fas fa-times"></i>
                     </button>
                   </div>
                 </div>
 
-                <div v-if="item.transport" class="mt-1.5 text-[11px] p-1.5 rounded-lg flex items-start gap-1"
-                     style="background:var(--sakura-light);color:var(--sakura-deep)">
-                  <i class="fas fa-subway mt-0.5"></i><span>{{ item.transport }}</span>
+                <div v-if="item.transport" class="mt-2 text-[11px] p-2 rounded-lg flex items-start gap-1.5 border border-sky-100 bg-sky-50/50"
+                     style="color:#0369a1">
+                  <i class="fas fa-train mt-0.5 flex-shrink-0"></i>
+                  <span class="break-words">{{ item.transport }}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <button @click="openAddForm" class="btn-outline-pink w-full mt-5 text-sm flex items-center justify-center gap-2 border-dashed hover:bg-pink-50 transition-colors py-2">
+          <i class="fas fa-plus"></i> 新增行程
+        </button>
       </div>
     </div>
 
     <!-- ===== 記帳分頁 ===== -->
     <div v-show="activeTab === 'account'">
-      <div class="card p-5 mb-5">
-        <h2 class="section-title mb-3"><i class="fas fa-receipt" style="color:var(--sakura-main)"></i> 記帳本</h2>
-        <div class="flex gap-2 mb-3">
-          <label class="btn-pink text-sm flex items-center gap-2 cursor-pointer">
+      <div class="card p-4 mb-5 relative z-10">
+        <h2 class="section-title mb-4"><i class="fas fa-shopping-bag" style="color:var(--theme-pink)"></i> 推活記帳本</h2>
+        <div class="flex gap-2 mb-4">
+          <label class="btn-pink text-sm flex items-center justify-center gap-2 cursor-pointer flex-1">
             <i class="fas fa-camera"></i> 拍攝單據
             <input type="file" accept="image/*" capture="environment" class="hidden" @change="handleReceiptUpload">
           </label>
-          <button @click="simulateReceiptRecognition" class="btn-outline-pink text-sm flex items-center gap-2">
+          <button @click="simulateReceiptRecognition" class="btn-outline-pink text-sm flex items-center justify-center gap-2 flex-1">
             <i class="fas fa-magic"></i> 模擬識別
           </button>
         </div>
-        <div v-if="currentItems.length" class="mb-3 p-3 rounded-2xl" style="background:var(--sakura-light)">
-          <p class="text-xs font-semibold mb-2" style="color:var(--sakura-deep)">📝 識別結果 (可修改)</p>
-          <div v-for="(item, idx) in currentItems" :key="idx" class="flex items-center gap-2 mb-2 bg-white p-2 rounded-xl">
-            <input v-model="item.name" class="flex-1 border rounded-lg px-2 py-1 text-sm" style="border-color:var(--sakura-mid)" placeholder="品項">
-            <input v-model.number="item.price" type="number" class="w-20 border rounded-lg px-2 py-1 text-sm" style="border-color:var(--sakura-mid)" placeholder="金額">
-            <button @click="currentItems.splice(idx, 1)" style="color:var(--sakura-main)"><i class="fas fa-trash-alt"></i></button>
+        <div v-if="currentItems.length" class="mb-4 p-3 rounded-2xl border border-pink-100 bg-pink-50/50">
+          <p class="text-xs font-bold mb-2" style="color:var(--theme-pink)">📝 識別結果 (可修改)</p>
+          <div v-for="(item, idx) in currentItems" :key="idx" class="flex items-center gap-1.5 mb-2 bg-white p-2 rounded-xl border border-pink-100">
+            <input v-model="item.name" class="flex-1 min-w-0 border rounded-lg px-2 py-1 text-sm outline-none" style="border-color:var(--theme-pink-light)" placeholder="品項">
+            <input v-model.number="item.price" type="number" class="w-16 flex-shrink-0 border rounded-lg px-2 py-1 text-sm outline-none" style="border-color:var(--theme-pink-light)" placeholder="金額">
+            <button @click="currentItems.splice(idx, 1)" class="text-gray-400 hover:text-red-400 px-1"><i class="fas fa-trash-alt"></i></button>
           </div>
-          <div class="flex justify-between items-center mt-2">
-            <span class="text-sm font-bold" style="color:var(--sakura-deep)">總額：¥{{ currentTotal }}</span>
+          <div class="flex justify-between items-center mt-3 pt-2 border-t border-pink-100">
+            <span class="text-sm font-black" style="color:var(--theme-pink)">總額：¥{{ currentTotal }}</span>
             <button @click="addCurrentToBill" class="btn-pink text-xs px-4 py-1.5">加入帳單</button>
           </div>
         </div>
-        <div v-if="currentBillItems.length" class="mb-2">
-          <p class="text-xs font-semibold" style="color:var(--sakura-deep)">🧾 目前帳單明細</p>
-          <div v-for="(bill, idx) in currentBillItems" :key="idx" class="flex justify-between text-sm py-1 border-b" style="border-color:var(--sakura-light)">
-            <span>{{ bill.name }}</span><span style="color:var(--sakura-main)">¥{{ bill.price }}</span>
+        <div v-if="currentBillItems.length" class="mb-2 bg-white rounded-xl p-3 border border-pink-100 shadow-sm">
+          <p class="text-xs font-bold mb-2" style="color:var(--theme-pink)">🧾 目前帳單明細</p>
+          <div v-for="(bill, idx) in currentBillItems" :key="idx" class="flex justify-between text-sm py-1.5 border-b border-dashed last:border-0" style="border-color:var(--theme-pink-light)">
+            <span class="truncate text-gray-600">{{ bill.name }}</span><span class="font-bold" style="color:var(--theme-pink)">¥{{ bill.price }}</span>
           </div>
         </div>
-        <div class="flex gap-2 mt-3">
-          <button @click="settleBill" class="btn-pink text-sm flex-1" :disabled="!currentBillItems.length">
-            <i class="fas fa-check-circle mr-1"></i> 結清帳單
+        <div class="flex gap-2 mt-4">
+          <button @click="settleBill" class="btn-pink text-sm flex-1 py-2" :disabled="!currentBillItems.length">
+            <i class="fas fa-check-circle mr-1"></i> 結清
           </button>
-          <button @click="exportBillText" class="btn-outline-pink text-sm flex-1" :disabled="!currentBillItems.length">
-            <i class="fas fa-file-export"></i> 匯出文字
+          <button @click="exportBillText" class="btn-outline-pink text-sm flex-1 py-2" :disabled="!currentBillItems.length">
+            <i class="fas fa-file-export"></i> 匯出
           </button>
         </div>
-        <div v-if="settledBills.length" class="mt-4">
-          <p class="text-xs font-semibold mb-1" style="color:var(--sakura-deep)">📅 歷史結清</p>
-          <div v-for="(settle, idx) in settledBills" :key="idx" class="p-2 rounded-xl mb-2 text-xs" style="background:var(--sakura-light)">
-            <div class="flex justify-between font-medium" style="color:var(--sakura-deep)">
+        <div v-if="settledBills.length" class="mt-6">
+          <p class="text-xs font-bold mb-2" style="color:var(--theme-blue)">📅 歷史結清</p>
+          <div v-for="(settle, idx) in settledBills" :key="idx" class="p-3 rounded-xl mb-2 text-xs border border-pink-100 bg-pink-50/30">
+            <div class="flex justify-between font-bold mb-1" style="color:var(--theme-pink)">
               <span>{{ settle.time }}</span><span>總額 ¥{{ settle.total }}</span>
             </div>
-            <div class="text-gray-500">{{ settle.items.map(i => i.name).join('、') }}</div>
+            <div class="text-gray-500 truncate">{{ settle.items.map(i => i.name).join('、') }}</div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 新增行程 Modal -->
+    <div v-if="showAddForm" class="fixed inset-0 z-50 bg-pink-900/20 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4" @click.self="showAddForm = false">
+      <div class="card w-full max-w-md p-5 rounded-t-3xl sm:rounded-3xl max-h-[85vh] overflow-y-auto border-t-4 border-pink-400">
+        <h3 class="section-title mb-4 justify-center text-lg"><i class="fas fa-plane-departure" style="color:var(--theme-pink)"></i> 新增行程</h3>
+        <div class="space-y-3">
+          <input v-model="newItem.time" class="input-pink" placeholder="時間，例：14:10 或 14:10-15:00">
+          <input v-model="newItem.activity" class="input-pink" placeholder="活動名稱（必填）">
+          <input v-model="newItem.note" class="input-pink" placeholder="備註">
+          <input v-model="newItem.place" class="input-pink" placeholder="地點（選填，供地圖）">
+          <input v-model="newItem.transport" class="input-pink" placeholder="交通方式（選填）">
+        </div>
+        <p v-if="conflictMsg" class="text-xs mt-3 p-2.5 rounded-lg font-medium border border-red-200" style="background:#fef2f2;color:#b91c1c">
+          <i class="fas fa-exclamation-triangle mr-1"></i>{{ conflictMsg }}
+        </p>
+        <div class="flex gap-3 mt-5">
+          <button @click="confirmAdd" class="btn-pink flex-1 text-sm py-2.5">加入</button>
+          <button @click="showAddForm = false" class="btn-outline-pink flex-1 text-sm py-2.5">取消</button>
         </div>
       </div>
     </div>
@@ -160,16 +291,15 @@
     <!-- 圖片預覽 Modal -->
     <div v-if="previewImageUrl" class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" @click="previewImageUrl = ''">
       <div class="relative max-w-full max-h-full">
-        <img :src="previewImageUrl" class="max-h-[85vh] rounded-xl object-contain">
-        <button class="absolute top-2 right-2 bg-white/80 rounded-full w-8 h-8 flex items-center justify-center text-gray-800">
+        <img :src="previewImageUrl" class="max-h-[85vh] rounded-xl object-contain border-4 border-white shadow-2xl">
+        <button class="absolute -top-3 -right-3 bg-white text-pink-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
           <i class="fas fa-times"></i>
         </button>
       </div>
     </div>
 
     <!-- 底部分頁導航 -->
-    <div class="fixed bottom-0 left-0 right-0 max-w-[480px] mx-auto bg-white/95 backdrop-blur-md border-t flex justify-around px-2 py-1.5"
-         style="border-color:var(--sakura-light)">
+    <div class="fixed bottom-0 left-0 right-0 max-w-[480px] mx-auto bg-white/90 backdrop-blur-md border-t border-pink-100 flex justify-around px-2 py-1.5 shadow-[0_-4px_20px_rgba(244,114,182,0.08)] z-40">
       <button v-for="tab in tabs" :key="tab.key" @click="activeTab = tab.key"
               class="tab-btn" :class="{ active: activeTab === tab.key }">
         <i class="fas text-lg" :class="tab.icon"></i>{{ tab.label }}
@@ -180,33 +310,63 @@
   <script>
     const { createApp, ref, computed, watch, onMounted } = Vue;
 
+    const LOCKED_KEYS = ['Paradox Live', 'Aries', 'me me coffee', 'APA HOTEL', 'HMV'];
+    const isLocked = (item) => item.locked || LOCKED_KEYS.some(k => (item.activity || '').includes(k));
+
+    const parseTime = (t) => {
+      if (!t) return null;
+      const s = String(t).trim();
+      const m = s.match(/(\d{1,2}):(\d{2})(?:\s*[-~]\s*(\d{1,2}):(\d{2}))?/);
+      if (!m) return null;
+      const start = +m[1] * 60 + +m[2];
+      const end = m[3] ? +m[3] * 60 + +m[4] : start + 30;
+      return { start, end };
+    };
+
     createApp({
       setup() {
-        const STORAGE_KEY = 'tokyo_trip_app_v4';
+        const STORAGE_KEY = 'tokyo_trip_app_v14';
         const saveStatus = ref('saved');
         const activeTab = ref('itinerary');
         const selectedDate = ref('2026-11-14');
         const previewImageUrl = ref('');
+        const showAddForm = ref(false);
+        const conflictMsg = ref('');
+        const newItem = ref({ time: '', activity: '', note: '', place: '', transport: '' });
 
         const tabs = [
           { key: 'itinerary', label: '行程', icon: 'fa-calendar-alt' },
-          { key: 'account', label: '記帳', icon: 'fa-wallet' }
+          { key: 'account', label: '記帳', icon: 'fa-shopping-bag' }
         ];
 
         const days = ref([
           { date: '2026-11-14', label: 'Day1', short: '11/14', emoji: '🌸', title: '抵達日・池袋編髮+涉谷展覽+推活咖啡', dateStr: '11月14日 (六)', itinerary: [
             { time: '06:30', activity: '抵達成田機場 (NRT)', note: '下機、入境、領取行李', place: '成田機場' },
             { time: '07:15-07:50', activity: '搭乘Keisei Skyliner往京成上野', note: '約36分鐘，¥2,520。車程中分裝行李', place: '京成上野駅', transport: 'Skyliner 直達京成上野' },
-            { time: '07:50-08:10', activity: '京成上野駅 ➔ 上野駅「入谷口」寄存行李', note: '計程車直達JR上野站入谷口(¥600-800)，切忌走路', place: 'JR上野站入谷口', transport: '計程車3-5分鐘' },
-            { time: '08:10-08:20', activity: '只帶小袋步行到朋友家', note: 'プラチナコート上野（台東区下谷1-5-35），入谷口步行6分鐘，全程平路', place: 'プラチナコート上野', transport: '步行6分鐘' },
+            { time: '07:50-08:20', activity: '前往朋友家', note: '從京成上野駅步行至朋友家（約6分鐘，全程平路），不需拖著大行李。', place: 'プラチナコート上野', transport: '步行6分鐘' },
             { time: '08:20-09:30', activity: '朋友家：換衣服 + 化妝', note: '輕鬆進行，不用理會大行李', place: 'プラチナコート上野' },
-            { time: '09:30-09:45', activity: '步行回入谷口取回行李', note: '6分鐘，Suica一刷即開', place: 'JR上野站入谷口', transport: '步行6分鐘' },
-            { time: '09:45-10:15', activity: 'ホテルマイステイズ東池袋・行李寄存', note: '入谷口 → 步行至入谷駅 → 日比谷線 → 上野 → 山手線 → 大塚，約30分鐘 ¥400', place: 'ホテルマイステイズ東池袋', transport: '日比谷線+山手線 約30分鐘 ¥400' },
-            { time: '10:15-12:30', activity: '池袋西口周邊逛街/休息', note: '編髮前緩衝時間，可先吃點東西', place: '池袋西口' },
-            { time: '13:00-13:30', activity: 'ヘアセットAries 池袋駅西口店 編髮(已預約)', note: '13:00開始，約30分鐘完成', place: 'ヘアセットAries 池袋駅西口店', transport: '酒店步行至池袋西口約10分鐘', bookingImg: '' },
-            { time: '13:30-14:05', activity: '池袋 ➔ 涉谷 (直奔會場)', note: 'JR山手線直達約15-20分鐘，下車後步行至會場', place: '涉谷會場', transport: 'JR山手線 池袋→涉谷' },
-            { time: '14:10', activity: '🔥 Paradox Live 7周年快閃展覽(第1場) — 絕對不可遲到', note: '14:10準時開始，絕不推遲。偵察場地出口、周邊販售動線', place: '涉谷會場', bookingImg: '' },
-            { time: '15:30-17:00', activity: 'me me coffee 推活咖啡時光(已預約17:00)', note: '已預約17:00時段進場，展覽後先緩衝再前往', place: 'me me coffee', bookingImg: '' },
+            { time: '09:30-10:00', activity: '前往酒店寄放行李', note: '帶著行李從朋友家出發，前往東池袋酒店。', place: 'ホテルマイステイズ東池袋', transport: '步行+日比谷線+山手線 約30分鐘 ¥400' },
+            { 
+              time: '10:00-10:30', 
+              activity: 'ホテルマイステイズ東池袋・行李寄存', 
+              note: '抵達酒店寄放行李，準備後續行程。', 
+              place: 'ホテルマイステイズ東池袋', 
+              transport: '寄放行李',
+              showDelivery: false,
+              deliveryInfo: {
+                hotel: 'Hotel MyStays Higashi-Ikebukuro (ホテルマイステイズ東池袋)',
+                zip: '170-0013',
+                address: '4-39-13 Higashi-Ikebukuro, Toshima-ku, Tokyo, Japan (東京都豊島区東池袋4-39-13)',
+                phone: '+81-3-5396-9221',
+                note: '飯店要求必須「先付清運費 (Prepaid)」，絕對不可選貨到付款。備註欄請寫上英文全名與入住日期 (November 14 / 11月14日)。'
+              }
+            },
+            { time: '10:30-12:30', activity: '池袋西口周邊逛街/休息', note: '編髮前緩衝時間，可先吃點東西', place: '池袋西口' },
+            { time: '13:00-13:30', activity: 'ヘアセットAries 池袋駅西口店 編髮(已預約)', note: '13:00開始，約30分鐘完成', place: 'ヘアセットAries 池袋駅西口店', transport: '酒店步行至池袋西口約10分鐘', bookingImg: '', locked: true },
+            { time: '13:30-13:35', activity: '池袋 ➔ 涉谷 (直奔會場)', note: 'JR山手線直達約15-20分鐘，下車後步行至會場', place: '涉谷', transport: 'JR山手線 池袋→涉谷' },
+            { time: '13:35-14:05', activity: '🛍️ 快閃 HMV&BOOKS SHIBUYA 5F (秋季販售會)', note: '位於涉谷 modi 5F（與展覽同棟）。預留半小時，快速拿取目標商品結帳。', place: 'HMV&BOOKS SHIBUYA', transport: '展場搭電梯直上5F', bookingImg: '', locked: true },
+            { time: '14:10-15:30', activity: '🔥 Paradox Live 7周年快閃展覽(第1場)', note: '14:10準時開始，絕不推遲。偵察場地出口、周邊販售動線', place: '涉谷會場 (modi 2F)', bookingImg: '', locked: true },
+            { time: '17:00-18:00', activity: 'me me coffee 推活咖啡時光(已預約17:00)', note: '已預約17:00時段進場。', place: 'me me coffee', bookingImg: '', locked: true },
             { time: '18:00-20:00', activity: '晚餐：涉谷/新宿吃naan', note: '印度烤餅/芝士Naan', place: '涉谷' },
             { time: '20:30', activity: '返回東池袋酒店休息', note: '紅眼航班後早點休息', place: 'ホテルマイステイズ東池袋', transport: 'JR山手線 涉谷→池袋' }
           ]},
@@ -216,7 +376,7 @@
             { time: '11:45-13:15', activity: '散步經汽車道 ➔ 紅磚倉庫午餐', note: '推薦bills鬆餅或HAMMERHEAD', place: '紅磚倉庫', transport: '步行經汽車道' },
             { time: '13:15-14:15', activity: '紅磚倉庫挑選手信', note: 'ありあけハーバー船型蛋糕等', place: '紅磚倉庫' },
             { time: '14:20-14:55', activity: '搭乘みなとみらい線直通東急東横線前往涉谷', note: '約30分鐘，免轉車', place: '涉谷', transport: 'みなとみらい線直通東急東横線' },
-            { time: '15:30-18:30', activity: 'カラオケまねきねこ(涉谷店) — 崩壞星穹鐵道聯動', note: '入座時必須第一時間告知要購買聯動商品', place: 'カラオケまねきねこ 涉谷店', bookingImg: '' },
+            { time: '15:30-18:30', activity: 'カラオケまねきねこ(涉谷店) — 崩壞星穹鐵道聯動', note: '入座時必須第一時間告知要購買聯動商品', place: 'カラオケまねきねこ 涉谷店' },
             { time: '19:00', activity: '涉谷晚餐 ➔ 返回池袋酒店', note: '', place: '池袋', transport: 'JR山手線 涉谷→池袋' }
           ]},
           { date: '2026-11-16', label: 'Day3', short: '11/16', emoji: '🎄', title: '東京站Sanrio+涉谷展覽+晴空塔聖誕市集', dateStr: '11月16日 (一)', itinerary: [
@@ -225,23 +385,25 @@
             { time: '12:00-13:30', activity: '東京站內午餐', note: '拉麵街或地下美食街，免走樓梯', place: '東京站' },
             { time: '13:40-14:20', activity: '前往涉谷', note: '東京站步行至大手町 ➔ 半藏門線直達涉谷約25分鐘', place: '涉谷', transport: '半藏門線 大手町→涉谷' },
             { time: '14:20-15:00', activity: '涉谷站周邊緩衝', note: '喝咖啡、上洗手間、整理裝備', place: '涉谷站' },
-            { time: '15:10-15:40', activity: '🔥 Paradox Live 7周年快閃展覽', note: '建議今天把周邊買齊', place: '涉谷會場', bookingImg: '' },
+            { time: '15:10-15:40', activity: '🔥 Paradox Live 7周年快閃展覽', note: '建議今天把周邊買齊', place: '涉谷會場', bookingImg: '', locked: true },
             { time: '15:50-16:25', activity: '涉谷搭乘半藏門線直達「押上」站', note: '約35分鐘，免換線', place: '押上站', transport: '半藏門線 涉谷→押上' },
             { time: '16:30-19:30', activity: '晴空塔Solamachi商場 + 聖誕市集', note: '押上站直連商場，傍晚點燈氣氛佳', place: '晴空塔' },
             { time: '20:10', activity: '返回池袋酒店', note: '半藏門線 ➔ 大手町 ➔ 丸之內線直達', place: '池袋', transport: '半藏門線+丸之內線' }
           ]},
-          { date: '2026-11-17', label: 'Day4', short: '11/17', emoji: '✈️', title: '三場連續展覽+輕鬆返港', dateStr: '11月17日 (二)', itinerary: [
-            { time: '前一晚', activity: '請酒店前台填寫Yamato宅急便，大行李箱直送成田機場', note: '約¥1,500-2,000，千萬不要讓行李成為負擔', place: '酒店前台' },
-            { time: '08:30-09:00', activity: '輕鬆退房(輕裝上陣)', note: '只背隨身小包', place: 'ホテルマイステイズ東池袋' },
-            { time: '09:00-09:15', activity: 'JR山手線：池袋 ➔ 涉谷', note: '約10分鐘', place: '涉谷', transport: 'JR山手線 池袋→涉谷' },
-            { time: '09:15-11:40', activity: '涉谷早午餐與輕鬆漫步', note: '逛Scramble Square、PARCO，11:15前食完正餐', place: '涉谷' },
-            { time: '11:50', activity: '到達涉谷會場外排隊準備', note: '', place: '涉谷會場' },
-            { time: '12:10-12:40', activity: '🔥 Paradox Live 快閃展覽(第1場)', note: '', place: '涉谷會場', bookingImg: '' },
-            { time: '12:40-13:10', activity: '🔥 Paradox Live 快閃展覽(第2場)', note: '', place: '涉谷會場', bookingImg: '' },
-            { time: '13:10-13:40', activity: '🔥 Paradox Live 快閃展覽(第3場)', note: '', place: '涉谷會場', bookingImg: '' },
-            { time: '13:40-14:05', activity: '展覽結束，立刻離開會場', note: '嚴格時間紅線：14:05前抵達涉谷站', place: '涉谷站' },
-            { time: '14:05-15:25', activity: '涉谷 ➔ 成田機場', note: '方案A：N\'EX直達約75-80分鐘¥3,070。方案B：山手線至日暮里轉Skyliner', place: '成田機場', transport: 'N\'EX 或 山手線+Skyliner' },
-            { time: '15:30-16:00', activity: '到達成田機場：領取宅配行李+辦理Check-in', note: '先到機場宅配櫃檯領回行李箱', place: '成田機場' },
+          { date: '2026-11-17', label: 'Day4', short: '11/17', emoji: '✈️', title: '三場展覽+日暮里行李+輕鬆返港', dateStr: '11月17日 (二)', itinerary: [
+            { time: '09:50-10:00', activity: '輕鬆退房(輕裝上陣)', note: '不化妝，最晚 10:00 退房。只背隨身小包，拖著大行李移動。', place: 'ホテルマイステイズ東池袋' },
+            { time: '10:00-10:20', activity: 'JR山手線：池袋 ➔ 日暮里', note: '約11分鐘', place: '日暮里站', transport: 'JR山手線 池袋→日暮里' },
+            { time: '11:00-11:30', activity: 'APA HOTEL TKP NIPPORI-EKIMAE 寄存行李', note: '提早抵達飯店，確保 11:30 前完成寄存手續。', place: 'APA HOTEL TKP NIPPORI-EKIMAE', bookingImg: '', locked: true },
+            { time: '11:30-11:50', activity: '日暮里 ➔ 涉谷 (提早去買HMV)', note: 'JR山手線直達約25分鐘，提早去涉谷可以避開人潮。', place: '涉谷', transport: 'JR山手線 日暮里→涉谷' },
+            { time: '11:50-12:20', activity: '🛍️ 前往 HMV&BOOKS SHIBUYA 5F 購物', note: '利用展覽前的空檔前往 5F 購買秋季商品，預留半小時慢慢逛。', place: 'HMV&BOOKS SHIBUYA', transport: '同棟大樓，搭電梯直上', bookingImg: '', locked: true },
+            { time: '12:20-12:40', activity: '涉谷站周邊緩衝', note: '買完東西後，上洗手間、整理裝備，準備排隊進場。', place: '涉谷站' },
+            { time: '12:40-13:10', activity: '🔥 Paradox Live 快閃展覽(第1場)', note: '', place: '涉谷會場 (modi 2F)', bookingImg: '', locked: true },
+            { time: '13:10-13:40', activity: '🔥 Paradox Live 快閃展覽(第2場)', note: '', place: '涉谷會場 (modi 2F)', bookingImg: '', locked: true },
+            { time: '13:40-14:05', activity: '🔥 Paradox Live 快閃展覽(第3場)', note: '展覽一結束立刻離開，準備搭車回日暮里。', place: '涉谷會場 (modi 2F)', bookingImg: '', locked: true },
+            { time: '14:05-14:20', activity: '涉谷 ➔ 日暮里 (趕回取行李)', note: 'JR山手線直達約 15-25 分鐘。請務必搭上這班車，確保 14:00 能抵達。', place: '日暮里站', transport: 'JR山手線 涉谷→日暮里' },
+            { time: '14:20-14:30', activity: 'APA HOTEL TKP NIPPORI-EKIMAE 取回行李', note: '準時向櫃檯取回行李，直接前往隔壁的京成日暮里站。', place: 'APA HOTEL TKP NIPPORI-EKIMAE', bookingImg: '', locked: true },
+            { time: '14:30-15:20', activity: '日暮里 ➔ 成田機場', note: '搭乘 Skyliner 直達約 36 分鐘，¥2,570。', place: '成田機場', transport: '京成 Skyliner 日暮里→成田機場', locked: true },
+            { time: '15:30-16:00', activity: '到達成田機場：辦理 Check-in', note: '確認行李，準備登機', place: '成田機場' },
             { time: '18:00', activity: 'CX505航班起飛，愉快返回香港', note: '預計22:20抵達', place: '成田機場' }
           ]}
         ]);
@@ -253,7 +415,6 @@
         const currentDay = computed(() => days.value.find(d => d.date === selectedDate.value) || days.value[0]);
         const currentTotal = computed(() => currentItems.value.reduce((s, i) => s + (i.price || 0), 0));
 
-        // 儲存 / 還原
         const save = () => {
           try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify({
@@ -284,23 +445,75 @@
 
         onMounted(load);
 
-        // 單一行程預約截圖上載
         const handleItemBookingUpload = (e, item) => {
           const file = e.target.files[0];
           if (!file) return;
           const reader = new FileReader();
-          reader.onload = (event) => {
-            item.bookingImg = event.target.result;
-          };
+          reader.onload = (event) => { item.bookingImg = event.target.result; };
           reader.readAsDataURL(file);
           e.target.value = '';
         };
 
-        const previewImg = (img) => {
-          previewImageUrl.value = img;
+        const previewImg = (img) => { previewImageUrl.value = img; };
+
+        const openAddForm = () => {
+          newItem.value = { time: '', activity: '', note: '', place: '', transport: '' };
+          conflictMsg.value = '';
+          showAddForm.value = true;
         };
 
-        // 記帳
+        const removeItem = (day, idx) => {
+          const item = day.itinerary[idx];
+          if (isLocked(item)) { alert('此行程為已預約活動，不可刪除。'); return; }
+          day.itinerary.splice(idx, 1);
+        };
+
+        const confirmAdd = () => {
+          const t = newItem.value.time.trim();
+          const act = newItem.value.activity.trim();
+          if (!act) { conflictMsg.value = '請輸入活動名稱。'; return; }
+          if (!t) { conflictMsg.value = '請輸入時間，例：14:10 或 14:10-15:00。'; return; }
+
+          const nt = parseTime(t);
+          if (!nt) { conflictMsg.value = '時間格式不正確，請用 14:10 或 14:10-15:00。'; return; }
+
+          const conflict = currentDay.value.itinerary.find(it => {
+            const et = parseTime(it.time);
+            if (!et) return false;
+            return nt.start < et.end && nt.end > et.start;
+          });
+          if (conflict) {
+            conflictMsg.value = `與「${conflict.activity}」( ${conflict.time} ) 時間衝突，無法加入。`;
+            return;
+          }
+
+          const newObj = { ...newItem.value, time: t, activity: act };
+          currentDay.value.itinerary.push(newObj);
+          currentDay.value.itinerary.sort((a, b) => {
+            const ta = parseTime(a.time), tb = parseTime(b.time);
+            if (!ta) return 1;
+            if (!tb) return -1;
+            return ta.start - tb.start;
+          });
+
+          const arr = currentDay.value.itinerary;
+          for (let i = 0; i < arr.length; i++) {
+            if (isLocked(arr[i])) continue;
+            if (i > 0) {
+              const prev = arr[i - 1], cur = arr[i];
+              const pt = parseTime(prev.time), ct = parseTime(cur.time);
+              if (pt && ct && ct.start > pt.end) {
+                const gap = ct.start - pt.end;
+                if (gap >= 10 && !cur.transport) {
+                  cur.transport = `與上一行程間隔約 ${gap} 分鐘，可安排交通/緩衝`;
+                }
+              }
+            }
+          }
+
+          showAddForm.value = false;
+        };
+
         const handleReceiptUpload = (e) => { simulateReceiptRecognition(); e.target.value = ''; };
         const simulateReceiptRecognition = () => {
           currentItems.value = [{ name: '芝士Naan', price: 1200 }, { name: '拉麵', price: 980 }];
@@ -322,7 +535,7 @@
         const exportBillText = () => {
           if (!currentBillItems.value.length) return;
           const total = currentBillItems.value.reduce((s, i) => s + i.price, 0);
-          let text = `🌸 東京獨旅帳單明細 🌸\n日期：${new Date().toLocaleString()}\n------------------------\n`;
+          let text = `🌸 東京推活帳單明細 🌸\n日期：${new Date().toLocaleString()}\n------------------------\n`;
           currentBillItems.value.forEach(i => { text += `${i.name}: ¥${i.price}\n`; });
           text += `------------------------\n總額：¥${total}\n`;
           const a = document.createElement('a');
@@ -335,6 +548,7 @@
           saveStatus, activeTab, selectedDate, days, tabs,
           currentItems, currentBillItems, settledBills,
           currentDay, currentTotal, previewImageUrl,
+          showAddForm, conflictMsg, newItem, openAddForm, confirmAdd, removeItem,
           handleItemBookingUpload, previewImg,
           handleReceiptUpload, simulateReceiptRecognition, addCurrentToBill, settleBill,
           exportBillText
